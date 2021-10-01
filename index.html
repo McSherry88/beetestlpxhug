@@ -2,18 +2,46 @@
 
 <!DOCTYPE html>
 
-<html lang="en">
+<html>
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>Sample AR</title>
-		
+		 <script>
+      AFRAME.registerComponent("animate-png", {
+        init: function() {
+          // load the .pngs
+          let loader = new THREE.TextureLoader()
+          this.pngArray = []
+          this.pngArray.push(loader.load('https://i.imgur.com/wjobVTN.jpg'))
+          this.pngArray.push(loader.load('https://i.imgur.com/I7PAB.jpg'))
+          this.pngArray.push(loader.load('https://i.imgur.com/HNluPrg.jpg'))
 
-  <script src="https://rawgit.com/mayognaise/aframe-gif-shader/master/dist/aframe-gif-shader.min.js"></script> 
-  <script src="https://rawgit.com/mayognaise/aframe-gif-component/master/dist/aframe-gif-component.min.js"></script> 
-<script src="aframe.min.js"></script>
-		<script src="aframe-ar.js"></script>
+          this.el.addEventListener('loaded', e => {
+            let mesh = this.el.getObject3D("mesh")
+            this.material = mesh.material
+
+            var i = 0
+            this.id = setInterval(e => {
+              if (i >= this.pngArray.length) i = 0;
+              this.material.map = this.pngArray[i++]
+              this.material.needsUpdate = true
+            }, 500)
+          })
+        },
+        remove: function() {
+          clearInterval(this.id);
+          // free the memory
+          for (let i = 0; i < this.pngArray.length; i++) {
+            this.pngArray[i].dispose();
+          }
+        }
+      })
+
+    </script>
+    <a-scene>
+      <a-box position="-1 0.5 -3" rotation="0 45 0" animate-png></a-box>
 
     </head>
 	<body style="margin : 0px; overflow: hidden; font-family: Monospace;"><div style='position: fixed; top: 10px; width:100%; text-align: center; z-index: 1;'>
